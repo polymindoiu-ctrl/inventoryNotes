@@ -278,33 +278,50 @@
       }).join('');
     }
 
-    // COPY FORMAT WHATSAPP BERDASARKAN TANGGAL
+    
+// COPY FORMAT WHATSAPP BERDASARKAN TANGGAL (LAYOUT BARU)
     function copyWhatsAppFormat(dateKey) {
-      const itemsInDate = inventoryData.filter(item => {
-        const itemDate = item.tanggal ? item.tanggal.split('T')[0] : 'Tanpa Tanggal';
-        return itemDate === dateKey;
-      });
+        const itemsInDate = inventoryData.filter(item => {
+            const itemDate = item.tanggal ? item.tanggal.split('T')[0] : 'Tanpa Tanggal';
+            return itemDate === dateKey;
+        });
 
-      if (itemsInDate.length === 0) return;
+        if (itemsInDate.length === 0) return;
 
-      const displayDate = formatDateDisplay(dateKey);
+        const displayDate = formatDateDisplay(dateKey);
 
-      // Gabungkan material dan issue
-      let detailsText = itemsInDate.map(item => {
-        const mat = item.nama_material || '-';
-        const iss = item.issue || '-';
-        return `*${mat}*\n${iss}`;
-      }).join('\n\n');
+        // Susun daftar item dengan bullet list dan nomor
+        let detailsText = itemsInDate.map((item, idx) => {
+            const mat = item.nama_material || '-';
+            const iss = item.issue || '-';
+            return `*${idx + 1}. ${mat}*\n   ⚠️ *Issue:* ${iss}`;
+        }).join('\n\n');
 
-      const waText = `Dear team,\n\nBerikut isu material tanggal ${displayDate} :\n\n${detailsText}\n\n*Catatan :*\nUntuk penggunaan bag FR pastikan bag sebelumnya sudah habis\n\nDemikian terima kasih\n\n#InventoryNotes #InventoryProduksi #Sutopo`;
+        const waText = [
+            `📋 *LAPORAN INVENTORY PRODUKSI*`,
+            `📅 *Tanggal:* ${displayDate}`,
+            `----------------------------------------`,
+            ``,
+            `*Daftar isu material:*`,
+            ``,
+            detailsText,
+            ``,
+            `----------------------------------------`,
+            `💡 *Catatan :*`,
+            `• Untuk penggunaan bag *FR*, pastikan bag sebelumnya sudah habis terlebih dahulu.`,
+            ``,
+            `Demikian Terima kasih`,
+            ``,
+            `#InventoryNotes #InventoryProduksi #Sutopo`
+        ].join('\n');
 
-      // Salin ke clipboard
-      navigator.clipboard.writeText(waText).then(() => {
-        showToast();
-      }).catch(err => {
-        console.error('Gagal menyalin: ', err);
-        alert('Gagal menyalin teks.');
-      });
+        // Salin ke clipboard
+        navigator.clipboard.writeText(waText).then(() => {
+            showToast();
+        }).catch(err => {
+            console.error('Gagal menyalin: ', err);
+            alert('Gagal menyalin teks.');
+        });
     }
 
     // TOAST NOTIFICATION HELPER
